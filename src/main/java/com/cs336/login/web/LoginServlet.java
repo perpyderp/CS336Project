@@ -32,9 +32,9 @@ public class LoginServlet extends HttpServlet {
 			if (user != null) {
 				HttpSession session = request.getSession();
 				String userID = String.valueOf(user.getUserID());
-				request.getSession().setAttribute(userID, userID);
+				request.getSession().setAttribute("userID", userID);
 				session.setAttribute("currentUser", user);
-				response.sendRedirect("Home.jsp");
+				request.getRequestDispatcher("Home.jsp").forward(request, response);
 			} 
 			else {
 				HttpSession session = request.getSession();

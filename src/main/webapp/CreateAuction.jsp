@@ -42,7 +42,8 @@
 	
 	<div>
 		<form method = "post" action = "<%=request.getContextPath()%>/createAuction">
-		<input type="hidden" name="user" value="${currentUser}" />
+		<% System.out.println(currentUser.getUserID()); %>
+		<input type="hidden" name="userID" value="${currentUser.getUserID()}" />
 		<table>
 			<tr>
 				<td>Item Name: <input type="text" name="itemName" step="0.01" size="25" maxlength="20" required></td>

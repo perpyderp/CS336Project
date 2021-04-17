@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     import = "com.cs336.user.User" import = "java.util.ArrayList" import = "com.cs336.auction.Auction"
+    import = "com.cs336.dbapp.ApplicationDB"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
@@ -10,9 +11,10 @@
 </head>
 <body>
 <%
+	ApplicationDB database = new ApplicationDB();
 	User currentUser = (User) session.getAttribute("currentUser");
 	String success = (String) session.getAttribute("unsuccessful");
-	ArrayList<Auction> auctions = (ArrayList<Auction>) session.getAttribute("Auctions");
+	ArrayList<Auction> auctions = database.getAuctions();
 %>
 	<div class="headerbar">
 	<div class="headerbar-right">
@@ -80,7 +82,7 @@
     </div>
   </div> 
 </div>
-
+<%  %>
 <%
 	if(auctions != null) {
 		

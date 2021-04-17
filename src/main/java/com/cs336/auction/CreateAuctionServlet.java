@@ -36,8 +36,8 @@ public class CreateAuctionServlet extends HttpServlet {
 			String closeTime = request.getParameter("closetime");
 			float initialPrice = Float.parseFloat(request.getParameter("initialPrice"));
 			float minIncrement = Float.parseFloat(request.getParameter("min_Increment"));
-			String userObj = request.getParameter("currentUser");
-			User currentUser = (User) request.getSession().getAttribute(userObj);
+			System.out.println(request.getParameter("userID"));
+			int userID = Integer.parseInt(request.getParameter("userID"));
 			//float hiddenMinIncrement = Float.parseFloat(request.getParameter("hidden_min_Increment"));
 			String description = request.getParameter("description");
 			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
@@ -50,7 +50,7 @@ public class CreateAuctionServlet extends HttpServlet {
 			ps.setDate(2, new java.sql.Date(startDate.getTime()));
 			ps.setDate(3, new java.sql.Date(closeDate.getTime()));
 			ps.setFloat(4, initialPrice);
-			ps.setInt(5, currentUser.getUserID());
+			ps.setInt(5, userID);
 			
 			ps.executeUpdate();
 			
