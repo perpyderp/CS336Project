@@ -42,7 +42,11 @@
 	
 	<div>
 		<form method = "post" action = "<%=request.getContextPath()%>/createAuction">
+		<input type="hidden" name="user" value="${currentUser}" />
 		<table>
+			<tr>
+				<td>Item Name: <input type="text" name="itemName" step="0.01" size="25" maxlength="20" required></td>
+			</tr>
 			<tr>    
 				<td><label for="starttime">Start Date:</label>
 				<input type="datetime-local" id="starttime" placeholder="yyyy-MM-dd'T'HH:mm" value = "2021-04-15T08:05" name=starttime maxlength="17" size="20"></td>

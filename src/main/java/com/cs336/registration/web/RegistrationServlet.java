@@ -56,9 +56,8 @@ public class RegistrationServlet extends HttpServlet {
 					PreparedStatement ps = conn.prepareStatement(insert);
 					ps.setString(1, username);
 					ps.setString(2, firstName);
-					ps.setString(0, lastName);
-					ps.setString(2, password);
-					ps.setString(3, "customer");
+					ps.setString(3, lastName);
+					ps.setString(4, password);
 					ps.execute();
 					
 					

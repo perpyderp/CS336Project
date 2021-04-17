@@ -51,7 +51,8 @@ public class LoginDao {
 			ResultSet rs = preparedStatement.executeQuery();
 			while(rs.next()) {
 				if(username.equals(rs.getString("username")) && password.equals(rs.getString("password"))) {
-					user = new User(username, password, false, false);
+					int userID = rs.getInt("userID");
+					user = new User(userID, username, password, false, false);
 				}
 			}
 		}

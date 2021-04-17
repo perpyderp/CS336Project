@@ -28,9 +28,11 @@ public class LoginServlet extends HttpServlet {
 		String password = request.getParameter("password");
 
 		try {
-			if (loginDao.validate(username, password)) {
+			User user = loginDao.findUser(username, password);
+			if (user != null) {
 				HttpSession session = request.getSession();
-				User user = new User(username, password, false, false);
+				String userID = String.valueOf(user.getUserID());
+				request.getSession().setAttribute(userID, userID);
 				session.setAttribute("currentUser", user);
 				response.sendRedirect("Home.jsp");
 			} 

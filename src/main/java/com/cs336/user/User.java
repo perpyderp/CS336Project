@@ -5,16 +5,20 @@ import java.io.Serializable;
 public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
+	private int userID;			//Primary key created in SQL
 	private String firstName;
 	private String lastName;
 	private String username;
 	private String password;
+	private boolean isCustomerRep;
+	private boolean isAdmin;
 	
-	public User(String username, String password, boolean isCustomerRep, boolean isAdmin) {
+	public User(int userID, String username, String password, boolean isCustomerRep, boolean isAdmin) {
+		this.userID = userID;
 		this.username = username;
 		this.password = password;
-//		this.setCustomerRep(isCustomerRep);
-//		this.setAdmin(isAdmin);
+		this.setCustomerRep(isCustomerRep);
+		this.setAdmin(isAdmin);
 	}
 	
 	public User() {}
@@ -27,13 +31,13 @@ public class User implements Serializable{
 	
 	public void setPassword(String password) { this.password = password; }
 
-//	public boolean isCustomerRep() { return isCustomerRep; }
-//
-//	public void setCustomerRep(boolean isCustomerRep) { this.isCustomerRep = isCustomerRep; }
-//
-//	public boolean isAdmin() { return isAdmin; }
-//
-//	public void setAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
+	public boolean isCustomerRep() { return isCustomerRep; }
+
+	public void setCustomerRep(boolean isCustomerRep) { this.isCustomerRep = isCustomerRep; }
+
+	public boolean isAdmin() { return isAdmin; }
+
+	public void setAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
 
 	public String getLastName() { return lastName; }
 
@@ -42,5 +46,9 @@ public class User implements Serializable{
 	public String getFirstName() { return firstName; }
 
 	public void setFirstName(String firstName) { this.firstName = firstName; }
+
+	public int getUserID() { return userID; }
+
+	public void setUserID(int userID) { this.userID = userID; }
 	
 }
