@@ -39,26 +39,6 @@ public class ApplicationDB {
 		
 	}
 	
-	public int countDB(String query) throws SQLException{
-		int count = 0;
-		PreparedStatement prepState = null;
-		ResultSet rs = null;
-		try{
-			prepState = getConnection().prepareStatement(query);
-			System.out.println(prepState.toString());
-			rs = prepState.executeQuery();
-			while(rs.next()){
-				count = rs.getInt(1);
-			}
-		} catch (SQLException e){
-			e.printStackTrace();
-		} finally{
-			try { if (rs != null) rs.close(); } catch (SQLException e){};
-			try { if (prepState != null) prepState.close(); } catch (SQLException e){};
-		}
-		return count;
-	}
-	
 	
 	public void closeConnection(Connection connection){
 		try {

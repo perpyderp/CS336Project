@@ -49,7 +49,13 @@
 	<form method = "post" action = "<%=request.getContextPath()%>/registration">
 		<table>
 			<tr>    
-				<td>Username: </td><td><input type="text" name="username" required></td>
+				<td>First Name: </td><td><input type="text" name="firstname" maxLength = "10" size = "14" required></td>
+			</tr>
+			<tr>    
+				<td>Last Name: </td><td><input type="text" name="lastname" maxLength = "10" size = "14" required></td>
+			</tr>
+			<tr>    
+				<td>Username: </td><td><input type="text" name="username" maxLength = "30" required></td>
 			</tr>
 			<tr>
 				<td>Password: </td><td><input type="password" name="password" required></td>

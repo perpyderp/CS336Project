@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    import = "com.cs336.user.User"
+    import = "com.cs336.user.User" import = "java.util.ArrayList" import = "com.cs336.auction.Auction"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
@@ -12,7 +12,7 @@
 <%
 	User currentUser = (User) session.getAttribute("currentUser");
 	String success = (String) session.getAttribute("unsuccessful");
-
+	ArrayList<Auction> auctions = (ArrayList<Auction>) session.getAttribute("Auctions");
 %>
 	<div class="headerbar">
 	<div class="headerbar-right">
@@ -80,5 +80,12 @@
     </div>
   </div> 
 </div>
+
+<%
+	if(auctions != null) {
+		
+	}
+	else { %> There are no auctions available! <% }
+%>
 </body>
 </html>

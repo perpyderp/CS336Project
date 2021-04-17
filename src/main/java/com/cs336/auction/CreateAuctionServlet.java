@@ -40,16 +40,13 @@ public class CreateAuctionServlet extends HttpServlet {
 			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
 			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
 			
-			int aucID = database.countDB("SELECT LAST_INSERT_ID();");
-			
-			String insert = "INSERT INTO auction(description, start_time, close_time, auctionID, initial_price)" + "VALUES(?, ?, ?, ?, ?)";
+			String insert = "INSERT INTO auction(description, start_time, close_time, initial_price)" + "VALUES(?, ?, ?, ?, ?)";
 			
 			PreparedStatement ps = conn.prepareStatement(insert);
 			ps.setString(1, description);
 			ps.setDate(2, new java.sql.Date(startDate.getTime()));
 			ps.setDate(3, new java.sql.Date(closeDate.getTime()));
-			ps.setInt(4, aucID);
-			ps.setFloat(5, initialPrice);
+			ps.setFloat(4, initialPrice);
 			
 			ps.executeUpdate();
 			

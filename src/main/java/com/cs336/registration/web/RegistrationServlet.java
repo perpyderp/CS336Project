@@ -30,6 +30,8 @@ public class RegistrationServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		String firstName = request.getParameter("firstname");
+		String lastName = request.getParameter("lastname");
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		User loginBean = new User();
@@ -50,13 +52,15 @@ public class RegistrationServlet extends HttpServlet {
 					
 					Statement stm = conn.createStatement();
 					
-					String insert = "INSERT INTO users(username, password, usertype)" + "VALUES(?, ?, ?)";
+					String insert = "INSERT INTO users(username, first_name, last_name, password)" + "VALUES(?, ?, ?, ?)";
 					PreparedStatement ps = conn.prepareStatement(insert);
 					ps.setString(1, username);
+					ps.setString(2, firstName);
+					ps.setString(0, lastName);
 					ps.setString(2, password);
 					ps.setString(3, "customer");
+					ps.execute();
 					
-					ps.executeUpdate();
 					
 					conn.close();
 					
