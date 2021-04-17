@@ -1,6 +1,8 @@
 package com.cs336.dbapp;
 
 import java.sql.*;
+import com.cs336.auction.Auction;
+import java.util.ArrayList;
 
 public class ApplicationDB {
 	
@@ -57,6 +59,24 @@ public class ApplicationDB {
 		dao.closeConnection(connection);
 	}
 	
-	
+//	public ArrayList<Auction> getAuctions() {
+//		ApplicationDB database = new ApplicationDB();
+//		ArrayList<Auction> auctions = new ArrayList<Auction>();
+//		try {
+//			Connection conn = database.getConnection();
+//
+//			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM auction");
+//			preparedStatement.setString(1, username);
+//			preparedStatement.setString(2, password);
+//
+//			ResultSet rs = preparedStatement.executeQuery();
+//			status = rs.next();
+//
+//		} 
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return auctions;
+//	}
 
 }
