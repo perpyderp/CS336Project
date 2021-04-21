@@ -10,16 +10,18 @@ public class Auction {
 	private Date start_Time;
 	private Date close_Time;
 	private String description;
-	private User seller;			
+	private int userID;				//foreign key from User			
 	private float initial_Price;
 	private float highest_Bid;
 	private float next_Min_Bid;
 	
-	public Auction(Date start_Time, Date close_Time, String description, User seller, float initial_Price) {
+	public Auction(int aucid, int userID, Date start_Time, Date close_Time, String description, int seller, float initial_Price) {
+		this.aucid = aucid;
+		this.userID = userID;
 		this.start_Time = start_Time;
 		this.close_Time = close_Time;
 		this.description = description;
-		this.seller = seller;
+		this.userID = userID;
 		this.initial_Price = initial_Price;
 	}
 	
@@ -37,9 +39,9 @@ public class Auction {
 
 	public void setDescription(String description) { this.description = description; }
 
-	public User getSeller() { return seller; }
+	public int getUserID() { return userID; }
 
-	public void setSeller(User seller) { this.seller = seller; }
+	public void setUserID(User seller) { this.userID = userID; }
 
 	public float getInitial_Price() { return initial_Price; }
 
@@ -53,5 +55,14 @@ public class Auction {
 
 	public void setNext_Min_Bid(float next_Min_Bid) { this.next_Min_Bid = next_Min_Bid; }
 	
-	
+	@Override
+	public String toString() {
+		return "Auction #" + aucid + 
+					"\n\t Start Time: " + start_Time +
+					"\n\t Close Time: " + close_Time +
+					"\n\t Initial Price: " + initial_Price +
+					"\n\t Highest Bid: " + highest_Bid +
+					"\n\t Description: " + description +
+					"\n\t Seller: " + userID;
+	}
 }

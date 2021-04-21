@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.sql.Timestamp;
-
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cs336.dbapp.ApplicationDB;
-import com.cs336.user.User;
 
 @WebServlet("/createAuction")
 public class CreateAuctionServlet extends HttpServlet {
@@ -42,13 +39,19 @@ public class CreateAuctionServlet extends HttpServlet {
 			String description = request.getParameter("description");
 			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
 			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
+			Date todayDate = new Date();
 			
+			if(checkBeforeToday(startTime, closeTime)) {
+				HttpSession session = request.getSession();
+				session.setAttribute("ERROR", "Invalid date! Start/Close date is before today's date");
+				response.sendRedirect("CreateAuction.jsp");
+			}
 			String insert = "INSERT INTO auction(description, start_time, close_time, initial_price, userID)" + "VALUES(?, ?, ?, ?, ?)";
 			
 			PreparedStatement ps = conn.prepareStatement(insert);
 			ps.setString(1, description);
-			ps.setDate(2, new java.sql.Date(startDate.getTime()));
-			ps.setDate(3, new java.sql.Date(closeDate.getTime()));
+			ps.setString(2, startTime);
+			ps.setString(3, closeTime);
 			ps.setFloat(4, initialPrice);
 			ps.setInt(5, userID);
 			
@@ -56,7 +59,6 @@ public class CreateAuctionServlet extends HttpServlet {
 			
 			conn.close();
 			
-			response.sendRedirect("Account.jsp");
 			System.out.println("Auction created successfully!");
 		}
 		catch (ParseException parseException) {
@@ -68,6 +70,56 @@ public class CreateAuctionServlet extends HttpServlet {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		try {
+			ApplicationDB database = new ApplicationDB();
+			Connection conn = database.getConnection();
+			Statement stm = conn.createStatement();
+			
+			String startTime = request.getParameter("starttime");
+			String closeTime = request.getParameter("closetime");
+			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
+			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(closeTime);
+			System.out.println("Start Date: " + startDate);
+			System.out.println("Close Date: " + closeDate);
+			long diff = closeDate.getTime() - startDate.getTime();
+			long diffHours = diff / (60 * 60 * 1000);
+			long days = diffHours/24;
+			String duration = "Days: " + days;
+			
+			String itemName = request.getParameter("itemName");
+			String category = request.getParameter("subcat");
+			String description = request.getParameter("description");
+			String userID = request.getParameter("userID");
+			
+			String insert = "INSERT INTO item(duration, seller, itemName, category, description)" + "VALUES(?, ?, ?, ?, ?)";
+			
+			PreparedStatement ps = conn.prepareStatement(insert);
+			ps.setString(1, duration);
+			ps.setString(2, userID);
+			ps.setString(3, itemName);
+			ps.setString(4, category);
+			ps.setString(5, description);
+			
+			ps.executeUpdate();
+			
+			conn.close();
+			
+			response.sendRedirect("Account.jsp");
+			System.out.println("Item created successfully!");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private boolean checkBeforeToday(String startTime, String closeTime) throws ParseException {
+		Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
+		Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
+		Date todayDate = new Date();
+		if(startDate.before(todayDate) || closeDate.before(todayDate)) {
+			return true;
+		}
+		return false;
 	}
 
 }

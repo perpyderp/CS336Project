@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     import = "com.cs336.user.User" import = "java.util.ArrayList" import = "com.cs336.auction.Auction"
-    import = "com.cs336.dbapp.ApplicationDB"
+    import = "com.cs336.dbapp.ApplicationDB" import = "java.sql.*"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
@@ -15,6 +15,7 @@
 	User currentUser = (User) session.getAttribute("currentUser");
 	String success = (String) session.getAttribute("unsuccessful");
 	ArrayList<Auction> auctions = database.getAuctions();
+	session.setAttribute("auctions", auctions);
 %>
 	<div class="headerbar">
 	<div class="headerbar-right">
@@ -82,12 +83,54 @@
     </div>
   </div> 
 </div>
-<%  %>
-<%
-	if(auctions != null) {
-		
-	}
-	else { %> There are no auctions available! <% }
-%>
+<div class="content">
+    	<%
+			Connection conn = database.getConnection();
+    		ResultSet rs = null;
+    	
+    		try {
+    			
+				String allAuctionsQuery = "SELECT * FROM Product WHERE sold=false";
+				Statement stm = conn.createStatement();
+				rs = s.executeQuery(allAuctionsQuery);
+				if (rs.next()) { %>
+					<h2>All Live Auctions</h2>
+					<table>
+						<tr>
+							<th>Item</th>
+							<th>Seller</th>
+							<th>Current Bid</th>
+							<th>End Date/Time</th>
+						</tr>
+						<%	do { %>
+						<tr>
+							<td>
+								<a href="auction.jsp?productId=<%= rs.getInt("productId") %>">
+									<%= rs.getString("brand") + " " + rs.getString("model") + " " + rs.getString("gender") +  " " + rs.getFloat("size") %>
+								</a>
+							</td>
+							<td><%= rs.getString("seller") %></td>
+							<td><%= currency.format(rs.getDouble("price")) %></td>
+							<td><%= rs.getString("endDate") %></td>
+						</tr>
+				 <%		} while (rs.next()); %> 
+					</table>
+				<%	} else { %>
+						<br><h3>There are currently no live auctions.</h3>
+				<%	} %>		
+			<%	
+			
+				
+				
+    		} catch (SQLException e){
+    			out.print("<p>Error connecting to MYSQL server.</p>");
+			    e.printStackTrace();    			
+    		} finally {
+				try { rs.close(); } catch (Exception e) {} 
+				try { s.close(); } catch (Exception e) {} 
+				try { conn.close(); } catch (Exception e) {} 
+    		}   	
+    	%>
+    	</div>
 </body>
 </html>

@@ -2,7 +2,11 @@ package com.cs336.dbapp;
 
 import java.sql.*;
 import com.cs336.auction.Auction;
+import com.cs336.user.User;
+import com.cs336.auction.Bid;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ApplicationDB {
 	
@@ -59,24 +63,36 @@ public class ApplicationDB {
 		dao.closeConnection(connection);
 	}
 	
-//	public ArrayList<Auction> getAuctions() {
-//		ApplicationDB database = new ApplicationDB();
-//		ArrayList<Auction> auctions = new ArrayList<Auction>();
-//		try {
-//			Connection conn = database.getConnection();
-//
-//			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM auction");
-//			preparedStatement.setString(1, username);
-//			preparedStatement.setString(2, password);
-//
-//			ResultSet rs = preparedStatement.executeQuery();
-//			status = rs.next();
-//
-//		} 
-//		catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return auctions;
-//	}
+	public ArrayList<Auction> getAuctions() {
+		ApplicationDB database = new ApplicationDB();
+		ArrayList<Auction> auctions = new ArrayList<Auction>();
+		try {
+			Connection conn = database.getConnection();
+
+			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM auction");
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd"); 
+			while(rs.next()) {
+				
+				auctions.add(new Auction(rs.getInt("userID"), rs.getInt("item_no"), formatDate.parse(rs.getString("start_time")), formatDate.parse(rs.getString("close_time")), 
+						rs.getString("description"), rs.getInt("userID"), rs.getFloat("initial_price")));
+			}
+
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return auctions;
+	}
+	
+	public ArrayList<Bid> bidHistory(Auction auction) {
+		ApplicationDB database = new ApplicationDB();
+		ArrayList<Bid> history = new ArrayList<Bid>();
+		
+		
+		
+		return history;
+	}
 
 }
