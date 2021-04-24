@@ -7,22 +7,27 @@ import java.util.ArrayList;
 public class Auction {
 
 	private int aucid;				//Primary key
+	private String item_Name;
+	private String category;
 	private Date start_Time;
 	private Date close_Time;
 	private String description;
-	private int userID;				//foreign key from User			
+	private String seller;				//foreign key from User			
 	private float initial_Price;
 	private float highest_Bid;
 	private float next_Min_Bid;
+	private boolean sold;
 	
-	public Auction(int aucid, int userID, Date start_Time, Date close_Time, String description, int seller, float initial_Price) {
+	public Auction(int aucid, String seller, Date start_Time, Date close_Time, String description, float initial_Price, String item_Name, String category, boolean sold) {
+		this.item_Name = item_Name;
+		this.category = category;
 		this.aucid = aucid;
-		this.userID = userID;
+		this.seller = seller;
 		this.start_Time = start_Time;
 		this.close_Time = close_Time;
 		this.description = description;
-		this.userID = userID;
 		this.initial_Price = initial_Price;
+		this.sold = sold;
 	}
 	
 	public Auction() {}
@@ -39,9 +44,9 @@ public class Auction {
 
 	public void setDescription(String description) { this.description = description; }
 
-	public int getUserID() { return userID; }
+	public String getUserID() { return seller; }
 
-	public void setUserID(User seller) { this.userID = userID; }
+	public void setUserID(String seller) { this.seller = seller; }
 
 	public float getInitial_Price() { return initial_Price; }
 
@@ -63,6 +68,6 @@ public class Auction {
 					"\n\t Initial Price: " + initial_Price +
 					"\n\t Highest Bid: " + highest_Bid +
 					"\n\t Description: " + description +
-					"\n\t Seller: " + userID;
+					"\n\t Seller: " + seller;
 	}
 }

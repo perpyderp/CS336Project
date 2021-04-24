@@ -33,9 +33,11 @@ public class CreateAuctionServlet extends HttpServlet {
 			String closeTime = request.getParameter("closetime");
 			float initialPrice = Float.parseFloat(request.getParameter("initialPrice"));
 			float minIncrement = Float.parseFloat(request.getParameter("min_Increment"));
-			System.out.println(request.getParameter("userID"));
-			int userID = Integer.parseInt(request.getParameter("userID"));
+			String user = request.getParameter("username");
 			//float hiddenMinIncrement = Float.parseFloat(request.getParameter("hidden_min_Increment"));
+			String itemName = request.getParameter("itemName");
+			String category = request.getParameter("subcat");
+			System.out.println(category);
 			String description = request.getParameter("description");
 			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
 			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
@@ -46,66 +48,29 @@ public class CreateAuctionServlet extends HttpServlet {
 				session.setAttribute("ERROR", "Invalid date! Start/Close date is before today's date");
 				response.sendRedirect("CreateAuction.jsp");
 			}
-			String insert = "INSERT INTO auction(description, start_time, close_time, initial_price, userID)" + "VALUES(?, ?, ?, ?, ?)";
+			String insert = "INSERT INTO auction(description, start_time, close_time, initial_price, seller, item_name, category)" + "VALUES(?, ?, ?, ?, ?, ?, ?)";
 			
 			PreparedStatement ps = conn.prepareStatement(insert);
 			ps.setString(1, description);
 			ps.setString(2, startTime);
 			ps.setString(3, closeTime);
 			ps.setFloat(4, initialPrice);
-			ps.setInt(5, userID);
+			ps.setString(5, user);
+			ps.setString(6, itemName);
+			ps.setString(7, category);
 			
 			ps.executeUpdate();
 			
 			conn.close();
 			
 			System.out.println("Auction created successfully!");
+			response.sendRedirect("Home.jsp");
 		}
 		catch (ParseException parseException) {
 			System.out.println("ERROR: Unable to parse start/close time");
 			HttpSession session = request.getSession();
 			session.setAttribute("ERROR", "Invalid date! Please enter a valid start/close time");
 			response.sendRedirect("CreateAuction.jsp");
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		try {
-			ApplicationDB database = new ApplicationDB();
-			Connection conn = database.getConnection();
-			Statement stm = conn.createStatement();
-			
-			String startTime = request.getParameter("starttime");
-			String closeTime = request.getParameter("closetime");
-			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
-			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(closeTime);
-			System.out.println("Start Date: " + startDate);
-			System.out.println("Close Date: " + closeDate);
-			long diff = closeDate.getTime() - startDate.getTime();
-			long diffHours = diff / (60 * 60 * 1000);
-			long days = diffHours/24;
-			String duration = "Days: " + days;
-			
-			String itemName = request.getParameter("itemName");
-			String category = request.getParameter("subcat");
-			String description = request.getParameter("description");
-			String userID = request.getParameter("userID");
-			
-			String insert = "INSERT INTO item(duration, seller, itemName, category, description)" + "VALUES(?, ?, ?, ?, ?)";
-			
-			PreparedStatement ps = conn.prepareStatement(insert);
-			ps.setString(1, duration);
-			ps.setString(2, userID);
-			ps.setString(3, itemName);
-			ps.setString(4, category);
-			ps.setString(5, description);
-			
-			ps.executeUpdate();
-			
-			conn.close();
-			
-			response.sendRedirect("Account.jsp");
-			System.out.println("Item created successfully!");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

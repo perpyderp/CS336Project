@@ -75,8 +75,8 @@ public class ApplicationDB {
 			SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd"); 
 			while(rs.next()) {
 				
-				auctions.add(new Auction(rs.getInt("userID"), rs.getInt("item_no"), formatDate.parse(rs.getString("start_time")), formatDate.parse(rs.getString("close_time")), 
-						rs.getString("description"), rs.getInt("userID"), rs.getFloat("initial_price")));
+				auctions.add(new Auction(rs.getInt("auctionID"), rs.getString("seller"), formatDate.parse(rs.getString("start_time")), formatDate.parse(rs.getString("close_time")), 
+						rs.getString("description"), rs.getFloat("initial_price"), rs.getString("item_name"), rs.getString("category"), rs.getBoolean("sold")));
 			}
 
 		} 
