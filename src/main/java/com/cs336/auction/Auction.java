@@ -1,8 +1,6 @@
 package com.cs336.auction;
 
 import java.util.Date;
-import com.cs336.user.User;
-import java.util.ArrayList;
 
 public class Auction {
 
@@ -14,11 +12,12 @@ public class Auction {
 	private String description;
 	private String seller;				//foreign key from User			
 	private float initial_Price;
+	private float hiddenMinPrice;
 	private float highest_Bid;
 	private float next_Min_Bid;
 	private boolean sold;
 	
-	public Auction(int aucid, String seller, Date start_Time, Date close_Time, String description, float initial_Price, String item_Name, String category, boolean sold) {
+	public Auction(int aucid, String seller, Date start_Time, Date close_Time, String description, float initial_Price, String item_Name, String category, boolean sold, float highest_Bid, float hiddenMinPrice) {
 		this.item_Name = item_Name;
 		this.category = category;
 		this.aucid = aucid;
@@ -27,10 +26,30 @@ public class Auction {
 		this.close_Time = close_Time;
 		this.description = description;
 		this.initial_Price = initial_Price;
-		this.sold = sold;
+		this.setSold(sold);
+		this.highest_Bid = highest_Bid;
+		this.hiddenMinPrice = hiddenMinPrice;
 	}
 	
 	public Auction() {}
+	
+	public int getAucid() { return aucid; }
+
+	public void setAucid(int aucid) { this.aucid = aucid; }
+
+	public String getItem_Name() { return item_Name; }
+
+	public void setItem_Name(String item_Name) { this.item_Name = item_Name; }
+
+	public String getCategory() { return category; }
+
+	public void setCategory(String category) { this.category = category; }
+
+	public String getSeller() { return seller; }
+
+	public void setSeller(String seller) { this.seller = seller; }
+	
+	public int getAuctionID() { return aucid; }
 	
 	public Date getStart_Time() { return start_Time; }
 
@@ -59,6 +78,13 @@ public class Auction {
 	public float getNext_Min_Bid() { return next_Min_Bid; }
 
 	public void setNext_Min_Bid(float next_Min_Bid) { this.next_Min_Bid = next_Min_Bid; }
+	
+	public boolean isSold() { return sold; }
+
+	public void setSold(boolean sold) { this.sold = sold; }
+
+	public float getHiddenMinPrice() { return hiddenMinPrice; }
+	
 	
 	@Override
 	public String toString() {

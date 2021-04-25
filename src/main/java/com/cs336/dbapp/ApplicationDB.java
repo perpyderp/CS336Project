@@ -17,7 +17,7 @@ public class ApplicationDB {
 	public Connection getConnection(){
 		
 		//Create a connection string
-		String connectionUrl = "jdbc:mysql://localhost:3306/cs336project";
+		String connectionUrl = "jdbc:mysql://localhost:3306/cs336project?autoReconnect=true&useSSL=false";
 		Connection connection = null;
 		
 		try {
@@ -76,7 +76,8 @@ public class ApplicationDB {
 			while(rs.next()) {
 				
 				auctions.add(new Auction(rs.getInt("auctionID"), rs.getString("seller"), formatDate.parse(rs.getString("start_time")), formatDate.parse(rs.getString("close_time")), 
-						rs.getString("description"), rs.getFloat("initial_price"), rs.getString("item_name"), rs.getString("category"), rs.getBoolean("sold")));
+						rs.getString("description"), rs.getFloat("initial_price"), rs.getString("item_name"), rs.getString("category"), rs.getBoolean("sold"), rs.getFloat("highest_bid"), 
+						rs.getFloat("hidden_min_price")));
 			}
 
 		} 
@@ -93,6 +94,33 @@ public class ApplicationDB {
 		
 		
 		return history;
+	}
+	
+	public void updateDatabase() {
+		ApplicationDB database = new ApplicationDB();
+		ArrayList<Integer> auctionIDPastClosed = new ArrayList<Integer>();
+		try {
+			Connection conn = database.getConnection();
+			
+			PreparedStatement updateAuctions = conn.prepareStatement("UPDATE auction SET sold=1 WHERE close_time < NOW() AND sold=0");
+			PreparedStatement getAuctions = conn.prepareStatement("SELECT * FROM auction WHERE close_time < NOW()");
+			ResultSet pastClosedResults = getAuctions.executeQuery();
+			int updateAuctionsResult = updateAuctions.executeUpdate();
+			while(pastClosedResults.next()) {
+				auctionIDPastClosed.add(pastClosedResults.getInt("auctionID"));
+			}
+//			if(updateAuctionsResult < 1) {
+//				System.out.println("No auctions were updated in the database");
+//			}
+		}
+		catch (Exception exception) {
+			exception.printStackTrace();
+		}
+//		System.out.println("All auctions past closed date");
+//		for(int i = 0; i < auctionIDPastClosed.size(); i++) {
+//			System.out.println("Auction #" + auctionIDPastClosed.get(i));
+//			
+//		}
 	}
 
 }

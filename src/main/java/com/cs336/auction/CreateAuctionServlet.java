@@ -3,7 +3,7 @@ package com.cs336.auction;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,40 +26,50 @@ public class CreateAuctionServlet extends HttpServlet {
 
 		try {
 			ApplicationDB database = new ApplicationDB();
+			HttpSession session = request.getSession();
 			Connection conn = database.getConnection();
-			Statement stm = conn.createStatement();
 			
 			String startTime = request.getParameter("starttime");
 			String closeTime = request.getParameter("closetime");
 			float initialPrice = Float.parseFloat(request.getParameter("initialPrice"));
-			float minIncrement = Float.parseFloat(request.getParameter("min_Increment"));
 			String user = request.getParameter("username");
-			//float hiddenMinIncrement = Float.parseFloat(request.getParameter("hidden_min_Increment"));
+			float hiddenMinPrice = Float.parseFloat(request.getParameter("hidden_min_price"));
 			String itemName = request.getParameter("itemName");
 			String category = request.getParameter("subcat");
-			System.out.println(category);
 			String description = request.getParameter("description");
 			Date startDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
-			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTime);
-			Date todayDate = new Date();
+			Date closeDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(closeTime);
+			Timestamp start = new Timestamp(startDate.getTime());
+			Timestamp close = new Timestamp(closeDate.getTime());
+//			Date todayDate = new Date();
 			
 			if(checkBeforeToday(startTime, closeTime)) {
-				HttpSession session = request.getSession();
 				session.setAttribute("ERROR", "Invalid date! Start/Close date is before today's date");
 				response.sendRedirect("CreateAuction.jsp");
+				return;
 			}
-			String insert = "INSERT INTO auction(description, start_time, close_time, initial_price, seller, item_name, category)" + "VALUES(?, ?, ?, ?, ?, ?, ?)";
+			else if(hiddenMinPrice<initialPrice && hiddenMinPrice != 0 || hiddenMinPrice < 0) {
+				session.setAttribute("ERROR", "Invalid minimum buyout price! Should be greater than the initial price");
+				response.sendRedirect("CreateAuction.jsp");
+				return;
+			}
+			else if(initialPrice < 0) {
+				session.setAttribute("ERROR", "Invalid initial price! Negative prices are not allowed");
+				response.sendRedirect("CreateAuction.jsp");
+				return;
+			}
+			String insert = "INSERT INTO auction(description, start_time, close_time, initial_price, seller, item_name, category, hidden_min_price)" + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 			
-			PreparedStatement ps = conn.prepareStatement(insert);
-			ps.setString(1, description);
-			ps.setString(2, startTime);
-			ps.setString(3, closeTime);
-			ps.setFloat(4, initialPrice);
-			ps.setString(5, user);
-			ps.setString(6, itemName);
-			ps.setString(7, category);
-			
-			ps.executeUpdate();
+			PreparedStatement insertAuctionPS = conn.prepareStatement(insert);
+			insertAuctionPS.setString(1, description);
+			insertAuctionPS.setTimestamp(2, start);
+			insertAuctionPS.setTimestamp(3, close);
+			insertAuctionPS.setFloat(4, initialPrice);
+			insertAuctionPS.setString(5, user);
+			insertAuctionPS.setString(6, itemName);
+			insertAuctionPS.setString(7, category);
+			insertAuctionPS.setFloat(8, hiddenMinPrice);
+			insertAuctionPS.executeUpdate();
 			
 			conn.close();
 			
@@ -70,6 +80,12 @@ public class CreateAuctionServlet extends HttpServlet {
 			System.out.println("ERROR: Unable to parse start/close time");
 			HttpSession session = request.getSession();
 			session.setAttribute("ERROR", "Invalid date! Please enter a valid start/close time");
+			response.sendRedirect("CreateAuction.jsp");
+		}
+		catch (NumberFormatException wrongFormat) {
+			System.out.println("ERROR: Wrong number format!");
+			HttpSession session = request.getSession();
+			session.setAttribute("ERROR", "Invalid price(s)! Please enter a valid price");
 			response.sendRedirect("CreateAuction.jsp");
 		}
 		catch (Exception e) {

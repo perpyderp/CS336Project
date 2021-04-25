@@ -52,7 +52,10 @@ public class LoginDao {
 			while(rs.next()) {
 				if(username.equals(rs.getString("username")) && password.equals(rs.getString("password"))) {
 					int userID = rs.getInt("userID");
-					user = new User(userID, username, password, false, false);
+					System.out.println(userID);
+					String firstName = rs.getString("first_name");
+					String lastName = rs.getString("last_name");
+					user = new User(userID, username, password, false, false, firstName, lastName);
 				}
 			}
 		}

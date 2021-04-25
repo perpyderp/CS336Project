@@ -13,12 +13,14 @@ public class User implements Serializable{
 	private boolean isCustomerRep;
 	private boolean isAdmin;
 	
-	public User(int userID, String username, String password, boolean isCustomerRep, boolean isAdmin) {
+	public User(int userID, String username, String password, boolean isCustomerRep, boolean isAdmin, String firstName, String lastName) {
 		this.userID = userID;
 		this.username = username;
 		this.password = password;
 		this.setCustomerRep(isCustomerRep);
 		this.setAdmin(isAdmin);
+		this.firstName = firstName;
+		this.lastName = lastName;
 	}
 	
 	public User() {}
