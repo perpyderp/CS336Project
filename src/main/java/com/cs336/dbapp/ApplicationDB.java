@@ -1,19 +1,13 @@
 package com.cs336.dbapp;
 
 import java.sql.*;
-import com.cs336.auction.Auction;
-import com.cs336.user.User;
-import com.cs336.auction.Bid;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ApplicationDB {
 	
-	public ApplicationDB(){
-		
-	}
+	public ApplicationDB(){ }
 
+	@SuppressWarnings("deprecation")
 	public Connection getConnection(){
 		
 		//Create a connection string
@@ -23,36 +17,23 @@ public class ApplicationDB {
 		try {
 			//Load JDBC driver - the interface standardizing the connection procedure. Look at WEB-INF\lib for a mysql connector jar file, otherwise it fails.
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+		catch (InstantiationException e) { e.printStackTrace(); } 
+		catch (IllegalAccessException e) { e.printStackTrace(); } 
+		catch (ClassNotFoundException e) { e.printStackTrace(); }
 		try {
 			//Create a connection to your DB
 			connection = DriverManager.getConnection(connectionUrl,"root", "G3t3ducated");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+		catch (SQLException e) { e.printStackTrace(); }
 		
 		return connection;
-		
 	}
 	
 	
 	public void closeConnection(Connection connection){
-		try {
-			connection.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		try { connection.close(); } 
+		catch (SQLException e) { e.printStackTrace(); }
 	}
 	
 	public static void main(String[] args) {
@@ -63,38 +44,6 @@ public class ApplicationDB {
 		dao.closeConnection(connection);
 	}
 	
-	public ArrayList<Auction> getAuctions() {
-		ApplicationDB database = new ApplicationDB();
-		ArrayList<Auction> auctions = new ArrayList<Auction>();
-		try {
-			Connection conn = database.getConnection();
-
-			PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM auction");
-			ResultSet rs = preparedStatement.executeQuery();
-			
-			SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd"); 
-			while(rs.next()) {
-				
-				auctions.add(new Auction(rs.getInt("auctionID"), rs.getString("seller"), formatDate.parse(rs.getString("start_time")), formatDate.parse(rs.getString("close_time")), 
-						rs.getString("description"), rs.getFloat("initial_price"), rs.getString("item_name"), rs.getString("category"), rs.getBoolean("sold"), rs.getFloat("highest_bid"), 
-						rs.getFloat("hidden_min_price")));
-			}
-
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return auctions;
-	}
-	
-	public ArrayList<Bid> bidHistory(Auction auction) {
-		ApplicationDB database = new ApplicationDB();
-		ArrayList<Bid> history = new ArrayList<Bid>();
-		
-		
-		
-		return history;
-	}
 	
 	public void updateDatabase() {
 		ApplicationDB database = new ApplicationDB();
@@ -105,22 +54,14 @@ public class ApplicationDB {
 			PreparedStatement updateAuctions = conn.prepareStatement("UPDATE auction SET sold=1 WHERE close_time < NOW() AND sold=0");
 			PreparedStatement getAuctions = conn.prepareStatement("SELECT * FROM auction WHERE close_time < NOW()");
 			ResultSet pastClosedResults = getAuctions.executeQuery();
-			int updateAuctionsResult = updateAuctions.executeUpdate();
+			updateAuctions.executeUpdate();
 			while(pastClosedResults.next()) {
 				auctionIDPastClosed.add(pastClosedResults.getInt("auctionID"));
 			}
-//			if(updateAuctionsResult < 1) {
-//				System.out.println("No auctions were updated in the database");
-//			}
+			database.closeConnection(conn);
 		}
 		catch (Exception exception) {
 			exception.printStackTrace();
 		}
-//		System.out.println("All auctions past closed date");
-//		for(int i = 0; i < auctionIDPastClosed.size(); i++) {
-//			System.out.println("Auction #" + auctionIDPastClosed.get(i));
-//			
-//		}
 	}
-
 }

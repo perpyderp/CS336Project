@@ -44,19 +44,19 @@ public class PlaceBidServlet extends HttpServlet {
 				return;
 			}
 			Auction auction = (Auction) session.getAttribute("auction");
-			System.out.println("AUCTION IN SERVLET" + auction);
 			int auctionID = auction.getAuctionID();
 			String username = (String) request.getParameter("username");
 			String prevBidder = null;
 			float prevBid = 0;
 			float bid = Float.parseFloat(request.getParameter("placeBid"));
+			float minIncrement = auction.getMinIncrement();
 			Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
 			
 			String queryAuctionBid = "UPDATE auction SET highest_bid=? WHERE auctionID=?";
 			String queryAuctionBidTable = "INSERT INTO bid(auctionID, bid_amount, time_of_bid, buyer)" + "VALUES(?, ?, ?, ?)";
 			
 			//Checks if it's the starting bid and if the bid is greater than the initial price
-			if(auction.getHighest_Bid() == 0 && bid > auction.getInitial_Price()) {
+			if(auction.getHighest_Bid() == 0 && bid >= auction.getInitial_Price() + minIncrement) {
 				auctionPS = conn.prepareStatement(queryAuctionBid);
 				auctionPS.setFloat(1, bid);
 				auctionPS.setInt(2, auctionID);
@@ -80,7 +80,7 @@ public class PlaceBidServlet extends HttpServlet {
 					return;
 				}
 			}
-			else if(bid > auction.getHighest_Bid() && auction.getHighest_Bid() != 0){
+			else if(bid >= auction.getHighest_Bid() + minIncrement && auction.getHighest_Bid() != 0){
 				String queryAuctionBidHistory = "INSERT INTO bidhistory(auctionID, buyer, bid, time_of_bid)" + "VALUES(?, ?, ?, ?)";
 				String removeOldBid = "DELETE FROM bid WHERE auctionID=?";
 				String queryOldBid = "SELECT * FROM bid WHERE auctionID=?";
@@ -92,17 +92,17 @@ public class PlaceBidServlet extends HttpServlet {
 					prevBidder = queryOldRS.getString("buyer");
 					prevBid = queryOldRS.getFloat("bid_amount");
 				}
-				//Removing the old bid
+				//Delete the old bid from bid table
 				bidPS = conn.prepareStatement(removeOldBid);
 				bidPS.setInt(1, auctionID);
-				int removeOldResult = bidPS.executeUpdate();
-				if(removeOldResult < 1) { System.out.println("No old bids"); }
-				else { System.out.println("Removed the old bid"); }
+				bidPS.executeUpdate();
+				//Insert the old bid to the bidhistory table
 				bidHistoryPS = conn.prepareStatement(queryAuctionBidHistory);
 				bidHistoryPS.setInt(1, auctionID);
 				bidHistoryPS.setString(2, username);
 				bidHistoryPS.setFloat(3, auction.getHighest_Bid());
 				bidHistoryPS.setTimestamp(4, currentTime);
+				//Update the auction table's highest_bid
 				auctionPS = conn.prepareStatement(queryAuctionBid);
 				auctionPS.setFloat(1, bid);
 				auctionPS.setInt(2, auctionID);
@@ -118,6 +118,7 @@ public class PlaceBidServlet extends HttpServlet {
 					response.sendRedirect("ViewAuction.jsp?auctionID=" + auctionID);
 					return;
 				}
+				//Insert the new bid into the bid table
 				bidPS = conn.prepareStatement(queryAuctionBidTable);
 				bidPS.setInt(1, auctionID);
 				bidPS.setFloat(2, bid);
@@ -129,30 +130,34 @@ public class PlaceBidServlet extends HttpServlet {
 					response.sendRedirect("ViewAuction.jsp?auctionID=" + auctionID);
 					return;
 				}
-				System.out.println("Successfully placed bid for auction #: " + auctionID);
 			}
 			else {
-				System.out.println("Bid is invalid. Lower than current highest bid or lower than the initial price");
 				session.setAttribute("ERROR", "Couldn't place bid for auction. Bid is lower than current highest bid or lower than the initial price");
 				response.sendRedirect("ViewAuction.jsp?auctionID=" + auctionID);
 				return;
 			}
 			
-			String autoBid = request.getParameter("autobid");
+			String autoBid = request.getParameter("autobid");	
+			//If the checkbox from ViewAuction.jsp?auctionID=# is checked, attempt to insert new auto-bid into autobid table
 			if(autoBid != null && autoBid.equals("true") && request.getParameter("bidIncrement") != "" && request.getParameter("upperLimit") != "") {
-				float bidIncrement = Float.parseFloat(request.getParameter("bidIncrement"));
-				float maxBid = Float.parseFloat(request.getParameter("upperLimit"));
-				autoBidPS = conn.prepareStatement("INSERT INTO autobid(user, auctionID, max_price, bid_increment)" + "VALUES(?, ?, ?, ?)");
-				autoBidPS.setString(1, username);
-				autoBidPS.setInt(2, auctionID);
-				autoBidPS.setFloat(3, maxBid);
-				autoBidPS.setFloat(4, bidIncrement);
-				int autoBidRS = autoBidPS.executeUpdate();
-				if(autoBidRS < 1) {
-					System.out.println("Unable to insert auto-bid into database");
+				if(Float.parseFloat(request.getParameter("bidIncrement"))>= minIncrement) {
+					float bidIncrement = Float.parseFloat(request.getParameter("bidIncrement"));
+					float maxBid = Float.parseFloat(request.getParameter("upperLimit"));
+					autoBidPS = conn.prepareStatement("INSERT INTO autobid(user, auctionID, max_price, bid_increment)" + "VALUES(?, ?, ?, ?)");
+					autoBidPS.setString(1, username);
+					autoBidPS.setInt(2, auctionID);
+					autoBidPS.setFloat(3, maxBid);
+					autoBidPS.setFloat(4, bidIncrement);
+					int autoBidRS = autoBidPS.executeUpdate();
+					if(autoBidRS < 1) {
+						session.setAttribute("ERROR", "Unable to insert auto-bid into database");
+					}
+					else
+						session.setAttribute("MESSAGE", "Successfully inserted auto-bid to database");
 				}
-				else
-					System.out.println("Successfully inserted auto-bid to database");
+				else {
+					session.setAttribute("ERROR", "Couldn't place auto-bid for auction, bid increment must be greater than or equal to minimum increment");
+				}
 			}
 			boolean prevHasAuto = false;
 			float increment = 0;
@@ -207,12 +212,12 @@ public class PlaceBidServlet extends HttpServlet {
 					}
 			}
 			response.sendRedirect("ViewAuction.jsp?auctionID=" + auctionID);
-			auctionPS.close();
-			bidPS.close();
-			autoBidPS.close();
-			bidHistoryPS.close();
-			try { alertPS.close(); } catch(NullPointerException exception) { }
-			conn.close();
+			try { auctionPS.close(); } catch(NullPointerException exception) { } catch(Exception e) { e.printStackTrace(); }
+			try { bidPS.close(); } catch(NullPointerException exception) { } catch(Exception e) { e.printStackTrace(); }
+			try { autoBidPS.close(); } catch(NullPointerException exception) { } catch(Exception e) { e.printStackTrace(); }
+			try { bidHistoryPS.close(); } catch(NullPointerException exception) { } catch(Exception e) { e.printStackTrace(); }
+			try { alertPS.close(); } catch(NullPointerException exception) { } catch(Exception e) { e.printStackTrace(); }
+			try { conn.close(); } catch(NullPointerException exception) { } catch(Exception e) { e.printStackTrace(); }
 		}
 		catch(Exception exception) {
 			exception.printStackTrace();

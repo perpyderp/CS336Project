@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import com.cs336.login.database.LoginDao;
 
 
 @WebServlet("/logout")
@@ -24,5 +23,4 @@ public class LogoutServlet extends HttpServlet {
 		request.getRequestDispatcher("Home.jsp").forward(request, response);
 	}
 
-	
 }

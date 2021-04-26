@@ -20,9 +20,7 @@ public class RegistrationServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private RegistrationDao registrationDao;
 
-	public void init() {
-		registrationDao = new RegistrationDao();
-	}
+	public void init() { registrationDao = new RegistrationDao(); }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -45,29 +43,24 @@ public class RegistrationServlet extends HttpServlet {
 				response.sendRedirect("Registration.jsp");
 			} 
 			else {
-				HttpSession session = request.getSession();
 				try{
+					HttpSession session = request.getSession();
 					ApplicationDB database = new ApplicationDB();
 					Connection conn = database.getConnection();
-					
-					Statement stm = conn.createStatement();
-					
 					String insert = "INSERT INTO users(username, first_name, last_name, password)" + "VALUES(?, ?, ?, ?)";
+					
 					PreparedStatement ps = conn.prepareStatement(insert);
 					ps.setString(1, username);
 					ps.setString(2, firstName);
 					ps.setString(3, lastName);
 					ps.setString(4, password);
 					ps.execute();
-					
-					
 					conn.close();
 					
-					System.out.print("Successfully created account!");
-					
+					session.setAttribute("ACCOUNT_CREATE", "Successfully created account!");
 				}
 				catch(Exception e) {
-					System.out.println(e);
+					e.printStackTrace();
 				}
 				response.sendRedirect("Home.jsp");
 			}

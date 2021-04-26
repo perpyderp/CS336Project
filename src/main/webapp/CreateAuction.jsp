@@ -15,12 +15,12 @@
 <% if(currentUser == null) response.sendRedirect("Login.jsp");%>
 
 <%
+try {
 	String ERROR = (String) session.getAttribute("ERROR");
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 	Calendar cal = Calendar.getInstance();
-	Date date = new Date();
-	Date fillerStartDate = new Date();
-	Date fillercloseDate = new Date();
+	cal.add(Calendar.HOUR_OF_DAY, 1);
+	Date date = cal.getTime();
 	String today = formatter.format(date);
 %>
 	<% if(ERROR != null) { %>
@@ -46,10 +46,6 @@
  				 </select>
  				</td>	 
 			</tr>
-			<tr>    
-				<td><label for="starttime">Start Date:</label>
-				<input type="datetime-local" id="starttime" placeholder="yyyy-MM-dd'T'HH:mm" value = <%= today  %> name=starttime maxlength="17" size="20"></td>
-			</tr>
 			<tr>
 				<td><label for="closetime">Close Date:</label>
 				<input type="datetime-local" id="closetime" placeholder="yyyy-MM-dd'T'HH:mm" value = <%= today  %> name="closetime" maxlength="17" size="20"></td>
@@ -58,7 +54,10 @@
 				<td>Starting Price: $<input type="number" name="initialPrice" placeholder="0.00" step="0.01" size="10" maxlength="7" required></td>
 			</tr>
 			<tr>
-				<td>Hidden Minimum Price (Optional, 0 IF NONE): $<input type="number" value = "0.00" step="0.01" name="hidden_min_price" placeholder="0.00" step="0.01" size="10" maxlength="7"></td>
+				<td>Minimum Increment (0.01 minimum): $<input type="number" name="minIncrement" value = "0.01" placeholder="0.00" step="0.01" size="10" maxlength="7" required></td>
+			</tr>
+			<tr>
+				<td>Hidden Minimum Price (Optional, 0 IF NONE): $<input type="number" value = "0.00" step="0.01" name="hidden_min_price" placeholder="0.00" step="0.01" size="10" maxlength="7" required></td>
 			</tr>
 			<tr>
 				<td><textarea name="description" cols="50" rows="10" placeholder="Description... (Optional)"></textarea></td>
@@ -70,6 +69,9 @@
 		</form>
 	
 	</div>
-	
+<% }
+catch(Exception exception) {
+	response.sendRedirect("Error.jsp");
+}%>
 </body>
 </html>

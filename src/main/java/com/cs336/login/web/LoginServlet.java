@@ -18,9 +18,7 @@ public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private LoginDao loginDao;
 
-	public void init() {
-		loginDao = new LoginDao();
-	}
+	public void init() { loginDao = new LoginDao(); }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -41,8 +39,7 @@ public class LoginServlet extends HttpServlet {
 				session.setAttribute("unsuccessful", "unsuccessful");
 				response.sendRedirect("Login.jsp");
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		} 
+		catch (ClassNotFoundException e) { e.printStackTrace(); }
 	}
 }

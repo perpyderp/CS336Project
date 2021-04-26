@@ -14,10 +14,11 @@ public class Auction {
 	private float initial_Price;
 	private float hiddenMinPrice;
 	private float highest_Bid;
-	private float next_Min_Bid;
+	private float minIncrement;
 	private boolean sold;
 	
-	public Auction(int aucid, String seller, Date start_Time, Date close_Time, String description, float initial_Price, String item_Name, String category, boolean sold, float highest_Bid, float hiddenMinPrice) {
+	public Auction(int aucid, String seller, Date start_Time, Date close_Time, String description, float initial_Price, String item_Name, String category, boolean sold, float highest_Bid, float hiddenMinPrice, 
+			float minIncrement) {
 		this.item_Name = item_Name;
 		this.category = category;
 		this.aucid = aucid;
@@ -29,6 +30,7 @@ public class Auction {
 		this.setSold(sold);
 		this.highest_Bid = highest_Bid;
 		this.hiddenMinPrice = hiddenMinPrice;
+		this.minIncrement = minIncrement;
 	}
 	
 	public Auction() {}
@@ -75,9 +77,9 @@ public class Auction {
 
 	public void setHighest_Bid(float highest_Bid) { this.highest_Bid = highest_Bid; }
 
-	public float getNext_Min_Bid() { return next_Min_Bid; }
+	public float getMinIncrement() { return minIncrement; }
 
-	public void setNext_Min_Bid(float next_Min_Bid) { this.next_Min_Bid = next_Min_Bid; }
+	public void setMinIncrement(float minIncrement) { this.minIncrement = minIncrement; }
 	
 	public boolean isSold() { return sold; }
 
@@ -92,6 +94,7 @@ public class Auction {
 					"\n\t Start Time: " + start_Time +
 					"\n\t Close Time: " + close_Time +
 					"\n\t Initial Price: " + initial_Price +
+					"\n\t Minimum Bid Increment: " + minIncrement +
 					"\n\t Highest Bid: " + highest_Bid +
 					"\n\t Description: " + description +
 					"\n\t Seller: " + seller;

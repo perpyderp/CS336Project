@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    import = "com.cs336.user.User" import = "java.util.ArrayList" import = "com.cs336.auction.Auction"
-    import = "com.cs336.dbapp.ApplicationDB" import = "java.sql.*" import = "java.text.DecimalFormat"
+    import = "java.util.ArrayList" import = "com.cs336.auction.Auction"
+    import = "java.sql.*"
     pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
@@ -13,14 +13,15 @@
 <div class="container"><a href="Home.jsp"><img src="auctionlogo.png"></a></div>
 <%@ include file="Categories.jsp"%>
 <%
+try {
 	database.updateDatabase();
 	String deleteAccount = (String) session.getAttribute("SUCCESS");
 	String deleteAccountError = (String) session.getAttribute("ACCOUNT_DELETE");
 	String deleteAccountAuction = (String) session.getAttribute("AUCTION_DELETE");
-	DecimalFormat moneyFormat = new DecimalFormat("$0.00");
 	String success = (String) session.getAttribute("unsuccessful");
-	ArrayList<Auction> auctions = database.getAuctions();
-	session.setAttribute("auctions", auctions);
+	String createAccount = (String) session.getAttribute("ACCOUNT_CREATE");
+	//ArrayList<Auction> auctions = database.getAuctions();
+	//session.setAttribute("auctions", auctions);
 %>
 <div class="content">
 <% if(deleteAccount != null) { %>
@@ -32,36 +33,37 @@
 <% if(deleteAccountAuction != null) { %>
 	<div style="color:red;"> <% out.println(deleteAccountAuction); %> </div>
 <% session.removeAttribute("AUCTION_DELETE"); } %>
+<% if(createAccount != null) { %>
+	<div style="color:green;"> <% out.println(createAccount); %> </div>
+<% session.removeAttribute("ACCOUNT_CREATE"); } %>
 <%
 	Connection conn = database.getConnection();
 	ResultSet rs = null;
-	
-	try {
     			
 		String allAuctionsQuery = "SELECT * from Auction";
-		Statement stm = conn.createStatement();
-		rs = stm.executeQuery(allAuctionsQuery);
+		Statement allAuctions = conn.createStatement();
+		rs = allAuctions.executeQuery(allAuctionsQuery);
 		if (rs.next()) { %>
 			<h2>All Live Auctions</h2>
-			<table>
+			<table class="auction">
 			<tr>
 				<th>Auction #</th>
+				<th>Item Name</th>
 				<th>Seller</th>
 				<th>Initial Price</th>
 				<th>Current Bid</th>
 				<th>End Date/Time</th>
+				<th>Status</th>
 			</tr>
 			<%	do { %>
 			<tr>
-				<td>
-				<a href="ViewAuction.jsp?auctionID=<%= rs.getInt("auctionID") %>">
-				<%= rs.getString("auctionID") %>
-				</a>
-				</td>
+				<td><a href="ViewAuction.jsp?auctionID=<%= rs.getInt("auctionID") %>"><%= rs.getString("auctionID") %></a></td>
+				<td><%= rs.getString("item_name") %></td>
 				<td><%= rs.getString("seller") %></td>
-				<td><%= moneyFormat.format(rs.getFloat("initial_price")) %>
+				<td><%= moneyFormat.format(rs.getFloat("initial_price")) %></td>
 				<td><%= moneyFormat.format(rs.getFloat("highest_bid")) %></td>
 				<td><%= rs.getString("close_time") %></td>
+				<td><% if(rs.getBoolean("sold")) { %><div style="color:red;">CLOSED</div><% } else { %><div style="color:green;">OPEN</div><% } %></td>
 			</tr>
 			<% } while (rs.next()); %> 
 			</table>
@@ -70,13 +72,16 @@
 		<%	} %>		
 		<%	
 			rs.close();
-			stm.close();
+			allAuctions.close();
 			conn.close();
 		} 
 		catch (SQLException e){
-			out.print("<p>Error connecting to MYSQL server.</p>");
+			out.print("Oops! Something went wrong connecting to MYSQL server.");
 			e.printStackTrace();    			
-		} %>
+		}
+		catch(Exception exception) {
+			response.sendRedirect("Error.jsp");
+		}%>
 </div>
 </body>
 </html>

@@ -1,5 +1,8 @@
 @CHARSET "ISO-8859-1";
 
+table.auction td { padding:0 40px;}
+table.alert td { padding:0 50px;}
+
 h1 {text-align: center;}
 
 .container {
@@ -120,10 +123,12 @@ body {
   .sidenav a {font-size: 18px;}
 }
 
-.placeBid{
-	display:block
-}
 
-.autoBidForm{
-	display:none
+.autobid {
+  display: none;
+  width: 300px;
+  height: 50px;
+}
+#trigger:checked + .autobid {
+  display: block;
 }
